@@ -4,14 +4,32 @@ import { AppService } from './app.service';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { AuthModule } from './auth/auth.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { PropertyController } from './property/property.controller';
+import { PropertyModule } from './property/property.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [    
+  imports: [
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get<string>('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get<string>('DB_USER'),
+        password: configService.get<string>('DB_PASS'),
+        database: configService.get<string>('DB_NAME'),
+        autoLoadEntities: true,
+        synchronize: true, // only in dev
+      }),
+    }),    
     ConfigModule.forRoot({
-      isGlobal: true, // 👈 makes env vars available everywhere
+      isGlobal: true, //makes env vars available everywhere
     }),
-    AuthModule
+    AuthModule,
+    PropertyModule
   ],
   controllers: [AppController],
   providers: [

@@ -1,0 +1,7 @@
+finish making the basic CRUD operations for the entities
+
+user, only landlord
+    make a property
+    invite a tenant
+
+users can log in

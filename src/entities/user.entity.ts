@@ -15,8 +15,8 @@ export class User {
   @Column()
   password: string;
 
-  // Just role, not a relation
-  @Column({ type: 'enum', enum: ['LANDLORD', 'TENANT'] })
-  role: 'LANDLORD' | 'TENANT' | 'COMPANY';
+  // // Just role, not a relation
+  // @Column({ type: 'enum', enum: ['LANDLORD', 'TENANT'] })
+  // role: 'LANDLORD' | 'TENANT' | 'COMPANY';
 
 }
