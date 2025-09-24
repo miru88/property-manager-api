@@ -23,6 +23,12 @@ export class UserController {
 
     }
 
+    @Public()
+    @Get('all')
+    async getAllUsers() {
+        return await this.userService.getAllUsers();
+    }
+
 
     deleteUser(@Body() body: any) {
 

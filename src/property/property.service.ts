@@ -1,14 +1,18 @@
-import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Property } from 'src/entities/property.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { UsersService } from 'src/user/user.service';
+import { User } from 'src/entities/user.entity';
 
 @Injectable()
 export class PropertyService {
 
   constructor(@InjectRepository(Property)
-            private readonly propertyRepository: Repository<Property>) {}
+            private readonly propertyRepository: Repository<Property>,
+            private readonly userService: UsersService
+            ) {}
 
   private properties = [
     {
@@ -18,8 +22,8 @@ export class PropertyService {
     },
   ];
 
-  async findOne(propertyname: string) {
-    return this.properties.find(property => property.propertyname === propertyname);
+  async findOne(propertyname: string, propertyAddress) {
+    return await this.propertyRepository.findOne({where:{name: propertyname, address: propertyAddress}});
   }
 
   async createproperty(name: string, address: string, userId: number) {
@@ -34,6 +38,36 @@ export class PropertyService {
 
     return this.propertyRepository.save(newproperty);
   }
+
+  async associatePropertyWithUser(propertyId: number, userId: number) {
+
+    const property: Property | null = await this.propertyRepository.findOneBy({id:propertyId});
+
+    if(!property) {
+      throw new NotFoundException(`Property with id ${propertyId} not found`);
+    }
+
+    const user: User | null= await this.userService.findUserById(userId);
+
+    if(!user) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+
+    Object.assign(property, {userId: userId});
+
+    return this.propertyRepository.save(property);
+
+  }
+
+
+    async getAllProperties() {
+      return await this.propertyRepository.find();
+    }
+
+    async getallPropertiessById(ids: number[]) {
+      return await this.propertyRepository.find({where:{id: In(ids)}});
+    }
+
 
 
 }

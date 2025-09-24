@@ -21,10 +21,9 @@ export class PropertyController {
 
     }
 
-
     @Public()
-    @Get('test')
-    async test() {
-
+    @Get('all')
+    async getAllProperties() {
+        return await this.propertyService.getAllProperties();
     }
 }

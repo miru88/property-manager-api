@@ -3,7 +3,7 @@ import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/entities/user.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
@@ -19,11 +19,13 @@ export class UsersService {
     },
   ];
 
-  async findOne(username: string) {
-    return this.users.find(user => user.username === username);
+  async findUserByEmail(email: string) {
+    return await this.userRepository.findOne({where:{email:email}});
   }
 
-
+  async findUserById(userId: number) {
+    return await this.userRepository.findOne({where:{id:userId}});
+  }
 
   async createUser(email: string, password: string) {
 
@@ -47,11 +49,16 @@ export class UsersService {
 
     // }
 
-    // getUser() {
+    async getAllUsers() {
+      return await this.userRepository.find();
+    }
 
-    // }
+    async getallUsersByEmail(emails: string[]) {
+      return await this.userRepository.find({where:{email: In(emails)}});
+    }
 
-    // getUsers() {
+        async getallUsersById(ids: number[]) {
+      return await this.userRepository.find({where:{id: In(ids)}});
+    }
 
-    // }
   }

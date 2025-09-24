@@ -12,9 +12,9 @@ export class AuthService {
     ) {}
 
     //get a user and compare to arguements passed in
-    async validateUser(username: string, pass: string) {// TODO strong type this later
+    async validateUser(email: string, pass: string) {// TODO strong type this later
         // TODO strong type this later
-        const user = await this.userService.findOne(username);
+        const user = await this.userService.findUserByEmail(email);
 
         if (user && (await bcrypt.compare(pass, user.password))) {
             const {password, ...result} = user;
@@ -25,7 +25,7 @@ export class AuthService {
     }
 
     async login(user: any) {// TODO strong type this later
-        const payload = {username: user.username, sub: user.userId};
+        const payload = {email: user.email, sub: user.userId};
 
         return{accessToken: this.jwtService.sign(payload)};
     }
