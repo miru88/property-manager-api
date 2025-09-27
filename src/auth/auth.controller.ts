@@ -10,8 +10,8 @@ export class AuthController {
     @Public()
     @UseGuards(AuthGuard('local'))
     @Post('login')
-    login( @Body() user: any){ //TODO strong type
-       return  this.authService.login(user);
+    login(@Request() req){ //TODO strong type
+       return  this.authService.login(req.user);
     }
 
 
